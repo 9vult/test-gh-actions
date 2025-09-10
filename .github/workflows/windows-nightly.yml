@@ -24,9 +24,9 @@ jobs:
           system: CLANG64
           update: true
           install: >-
-            mingw-w64-ffms2
-            mingw-w64-libass
-            mingw-w64-ntldd
+            mingw-w64-x86_64-ffms2
+            mingw-w64-x86_64-libass
+            mingw-w64-x86_64-ntldd
 
       - name: Build Mizuki
         run: |
