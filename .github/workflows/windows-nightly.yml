@@ -29,18 +29,21 @@ jobs:
             mingw-w64-x86_64-ntldd
 
       - name: Build Mizuki
+        shell: pwsh
         run: |
           pushd Mizuki
           zig build --release=safe
           popd
 
       - name: Build Ameko
+        shell: pwsh
         run: |
           pushd Ameko
           dotnet publish -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
           popd
 
       - name: Copy Dependencies
+        shell: bash
         run: |
           cp Mizuki/zig-out/bin/Mizuki.dll Ameko/bin/Release/net9.0/win-x64/publish
           for dll in $(ntldd -R Mizuki/zig-out/bin/Mizuki.dll | awk '/clang64/ {print $3}'); do
