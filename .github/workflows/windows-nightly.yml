@@ -26,13 +26,13 @@ jobs:
           install: >-
             mingw-w64-x86_64-ffms2
             mingw-w64-x86_64-libass
-            mingw-w64-x86_64-ntldd
 
       - name: Copy Dependencies
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "Mizuki/lib" | Out-Null
           Copy-Item "C:\msys64\clang64\bin\*.dll" "Mizuki/lib" -Force
+          ls Mizuki/lib
 
       - name: Build Mizuki
         shell: pwsh
