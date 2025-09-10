@@ -28,6 +28,12 @@ jobs:
             mingw-w64-x86_64-libass
             mingw-w64-x86_64-ntldd
 
+      - name: Copy Dependencies
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "Mizuki/lib" | Out-Null
+          Copy-Item "C:\msys64\clang64\bin\*.dll" "Mizuki/lib" -Force
+
       - name: Build Mizuki
         shell: pwsh
         run: |
@@ -43,12 +49,10 @@ jobs:
           popd
 
       - name: Copy Dependencies
-        shell: bash
+        shell: pwsh
         run: |
-          cp Mizuki/zig-out/bin/Mizuki.dll Ameko/bin/Release/net9.0/win-x64/publish
-          for dll in $(ntldd -R Mizuki/zig-out/bin/Mizuki.dll | awk '/clang64/ {print $3}'); do
-            cp "$dll" Ameko/bin/Release/net9.0/win-x64/publish
-          done
+          Copy-Item "Mizuki/zig-out/Mizuki.dll" "Ameko/bin/Release/net9.0/publish" -Force
+          Copy-Item "C:\msys64\clang64\bin\*.dll" "Ameko/bin/Release/net9.0/publish" -Force
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
