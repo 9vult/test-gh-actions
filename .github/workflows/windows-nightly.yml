@@ -1,0 +1,52 @@
+name: Windows Nightly
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mlugg/setup-zig@v2
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install Dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          system: CLANG64
+          update: true
+          install: >-
+            mingw-w64-ffms2
+            mingw-w64-libass
+            mingw-w64-ntldd
+
+      - name: Build Mizuki
+        run: |
+          pushd Mizuki
+          zig build --release=safe
+          popd
+
+      - name: Build Ameko
+        run: |
+          pushd Ameko
+          dotnet publish -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
+          popd
+
+      - name: Copy Dependencies
+        run: |
+          cp Mizuki/zig-out/bin/Mizuki.dll Ameko/bin/Release/net9.0/win-x64/publish
+          for dll in $(ntldd -R Mizuki/zig-out/bin/Mizuki.dll | awk '/clang64/ {print $3}'); do
+            cp "$dll" Ameko/bin/Release/net9.0/win-x64/publish
+          done
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ameko-nightly-win-x64
+          path: Ameko/bin/Release/net9.0/win-x64/publish
