@@ -8,14 +8,14 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch null;
     if (msys2_dir) |dir| {
         defer b.allocator.free(dir);
-        obj.addLibraryPath(.{ .cwd_relative = dir });
+        obj.root_module.addLibraryPath(.{ .cwd_relative = dir });
     } else {
-        obj.addLibraryPath(b.path("lib"));
+        obj.root_module.addLibraryPath(b.path("lib"));
     }
 
-    obj.linkSystemLibrary("ffms2");
-    obj.linkSystemLibrary("ass");
-    obj.linkLibC();
+    obj.root_module.linkSystemLibrary("ffms2", .{ .preferred_link_mode = .static, .search_strategy = .mode_first });
+    obj.root_module.linkSystemLibrary("ass", .{ .preferred_link_mode = .static, .search_strategy = .mode_first });
+    obj.root_module.link_libc();
 }
 
 // Although this function looks imperative, note that its job is to

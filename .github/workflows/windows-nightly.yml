@@ -32,7 +32,7 @@ jobs:
       - name: Build Mizuki
         shell: pwsh
         env:
-          MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64/bin
+          MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
         run: |
           pushd Mizuki
           zig build --release=safe
