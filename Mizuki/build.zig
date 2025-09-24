@@ -15,7 +15,7 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
 
     obj.root_module.linkSystemLibrary("ffms2", .{ .preferred_link_mode = .static, .search_strategy = .mode_first });
     obj.root_module.linkSystemLibrary("ass", .{ .preferred_link_mode = .static, .search_strategy = .mode_first });
-    obj.root_module.link_libc();
+    obj.root_module.link_libc = true;
 }
 
 // Although this function looks imperative, note that its job is to
