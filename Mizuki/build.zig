@@ -4,6 +4,14 @@ const std = @import("std");
 fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.addIncludePath(b.path("include"));
     obj.addLibraryPath(b.path("lib"));
+
+    // Add msys2 direcrtory if it is set
+    const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch null;
+    if (msys2_dir) |dir| {
+        defer b.allocator.free(dir);
+        obj.addLibraryPath(.{ .path = b.fmt("{s}/lib", .{dir}) });
+    }
+
     obj.linkSystemLibrary("ffms2");
     obj.linkSystemLibrary("ass");
     obj.linkLibC();
@@ -43,11 +51,7 @@ pub fn build(b: *std.Build) void {
     // Now, we will create a static library based on the module we created above.
     // This creates a `std.Build.Step.Compile`, which is the build step responsible
     // for actually invoking the compiler.
-    const lib = b.addLibrary(.{
-        .name = "Mizuki",
-        .root_module = lib_mod,
-        .linkage = .dynamic
-    });
+    const lib = b.addLibrary(.{ .name = "Mizuki", .root_module = lib_mod, .linkage = .dynamic });
 
     linkLibraries(b, lib);
     lib.root_module.addImport("known-folders", known_folders);

@@ -27,21 +27,12 @@ jobs:
           install: >-
             mingw-w64-clang-x86_64-ffms2
             mingw-w64-clang-x86_64-libass
-
-      - name: Copy Dependencies
-        shell: pwsh
-        env:
-          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
-        run: |
-          New-Item -ItemType Directory -Force -Path "Mizuki\lib" | Out-Null
-          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libass-9.dll" "Mizuki\lib\ass.dll" -Force
-          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libffms2-5.dll" "Mizuki\lib\ffms2.dll" -Force
-          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libfreetype-6.dll" "Mizuki\lib\freetype.dll" -Force
-          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libfribidi-0.dll" "Mizuki\lib\fribidi.dll" -Force
-          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libharfbuzz-0.dll" "Mizuki\lib\libharfbuzz.dll" -Force
+            mingw-w64-clang-x86_64-ntldd
 
       - name: Build Mizuki
         shell: pwsh
+        env:
+          MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64
         run: |
           pushd Mizuki
           zig build --release=safe
@@ -55,10 +46,12 @@ jobs:
           popd
 
       - name: Copy Dependencies
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          Copy-Item "Mizuki\zig-out\bin\Mizuki.dll" "Ameko\bin\Release\net9.0\win-x64\publish" -Force
-          Copy-Item "Mizuki\lib\*" "Ameko\bin\Release\net9.0\win-x64\publish" -Force
+          cp "Mizuki/zig-out/bin/Mizuki.dll" "Ameko/bin/Release/net9.0/win-x64/publish"
+          for (dll in $(${{ steps.msys2.outputs.msys2-location }}/clang64/bin/ntldd -R "Mizuki/zig-out/bin/Mizuki.dll" | awk '/clang64/' {print $3})) do
+            cp "$dll" "Ameko/bin/Release/net9.0/win-x64/publish"
+          done
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
