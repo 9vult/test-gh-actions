@@ -9,7 +9,7 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch null;
     if (msys2_dir) |dir| {
         defer b.allocator.free(dir);
-        obj.addLibraryPath(.{ .path = b.fmt("{s}/lib", .{dir}) });
+        obj.addLibraryPath(.{ .path = dir });
     }
 
     obj.linkSystemLibrary("ffms2");
