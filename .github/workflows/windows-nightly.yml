@@ -1,0 +1,67 @@
+name: Windows Nightly
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.15.1
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install Dependencies
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: true
+          install: >-
+            mingw-w64-clang-x86_64-ffms2
+            mingw-w64-clang-x86_64-libass
+
+      - name: Copy Dependencies
+        shell: pwsh
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+        run: |
+          New-Item -ItemType Directory -Force -Path "Mizuki\lib" | Out-Null
+          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libass-9.dll" "Mizuki\lib\ass.dll" -Force
+          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libffms2-5.dll" "Mizuki\lib\ffms2.dll" -Force
+          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libfreetype-6.dll" "Mizuki\lib\freetype.dll" -Force
+          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libfribidi-0.dll" "Mizuki\lib\fribidi.dll" -Force
+          Copy-Item "$env:MSYS2_LOCATION\clang64\bin\libharfbuzz-0.dll" "Mizuki\lib\libharfbuzz.dll" -Force
+
+      - name: Build Mizuki
+        shell: pwsh
+        run: |
+          pushd Mizuki
+          zig build --release=safe
+          popd
+
+      - name: Build Ameko
+        shell: pwsh
+        run: |
+          pushd Ameko
+          dotnet publish -c Release -p:SolutionDir=..\ -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
+          popd
+
+      - name: Copy Dependencies
+        shell: pwsh
+        run: |
+          Copy-Item "Mizuki\zig-out\bin\Mizuki.dll" "Ameko\bin\Release\net9.0\win-x64\publish" -Force
+          Copy-Item "Mizuki\lib\*" "Ameko\bin\Release\net9.0\win-x64\publish" -Force
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ameko-nightly-win-x64
+          path: Ameko/bin/Release/net9.0/win-x64/publish
