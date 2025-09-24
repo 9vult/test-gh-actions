@@ -3,13 +3,14 @@ const std = @import("std");
 // Add the required dynamic libraries
 fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.addIncludePath(b.path("include"));
-    obj.addLibraryPath(b.path("lib"));
 
     // Add msys2 direcrtory if it is set
     const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch null;
     if (msys2_dir) |dir| {
         defer b.allocator.free(dir);
         obj.addLibraryPath(.{ .cwd_relative = dir });
+    } else {
+        obj.addLibraryPath(b.path("lib"));
     }
 
     obj.linkSystemLibrary("ffms2");
