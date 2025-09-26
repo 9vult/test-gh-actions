@@ -29,6 +29,13 @@ jobs:
             mingw-w64-clang-x86_64-libass
             mingw-w64-clang-x86_64-ntldd
 
+      - name: Copy dll.a to .a
+        shell: msys2 {0}
+        run: |
+          pushd ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
+          for f in *.dll.a; do [ -e "${f%.dll.a}.a" ] || cp -v "$f" "${f%.dll.a}.a"; done
+          popd
+
       - name: Build Mizuki
         shell: pwsh
         env:
