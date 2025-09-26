@@ -30,9 +30,11 @@ jobs:
             mingw-w64-clang-x86_64-ntldd
 
       - name: Copy dll.a to .a
-        shell: bash
+        shell: pwsh
+        env:
+          MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
         run: |
-          for f in ${{ steps.msys2.outputs.msys2-location }}/clang64/lib/*.dll.a; do [ -e "${f%.dll.a}.a" ] || cp -v "$f" "${f%.dll.a}.a"; done
+          Get-ChildItem "$env:DLL_DIR\*.dll.a" | ForEach-Object { $target = $_.FullName -replace '\.dll\.a$','.a'; if (-not (Test-Path $target)) { Copy-Item $_.FullName $target } }
 
       - name: Build Mizuki
         shell: pwsh

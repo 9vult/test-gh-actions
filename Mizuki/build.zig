@@ -5,7 +5,7 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.addIncludePath(b.path("include"));
 
     // Add msys2 direcrtory if it is set
-    const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch "";
+    const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch "C:\\Users\\ame\\scoop\\apps\\msys2\\current\\clang64\\lib";
     obj.root_module.addLibraryPath(.{ .cwd_relative = msys2_dir });
 
     obj.root_module.linkSystemLibrary("ass", .{});
