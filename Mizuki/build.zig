@@ -5,16 +5,11 @@ fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
     obj.addIncludePath(b.path("include"));
 
     // Add msys2 direcrtory if it is set
-    const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch null;
-    if (msys2_dir) |dir| {
-        defer b.allocator.free(dir);
-        obj.root_module.addLibraryPath(.{ .cwd_relative = dir });
-    } else {
-        obj.root_module.addLibraryPath(b.path("lib"));
-    }
+    const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch "";
+    obj.root_module.addLibraryPath(.{ .cwd_relative = msys2_dir });
 
-    obj.root_module.linkSystemLibrary("ffms2", .{ .preferred_link_mode = .static, .search_strategy = .mode_first });
-    obj.root_module.linkSystemLibrary("ass", .{ .preferred_link_mode = .static, .search_strategy = .mode_first });
+    obj.root_module.linkSystemLibrary("ass", .{});
+    obj.root_module.linkSystemLibrary("ffms2", .{});
     obj.root_module.link_libc = true;
 }
 
@@ -26,7 +21,9 @@ pub fn build(b: *std.Build) void {
     // what target to build for. Here we do not override the defaults, which
     // means any target is allowed, and the default is native. Other options
     // for restricting supported target set are available.
-    const target = b.standardTargetOptions(.{});
+    const target = b.standardTargetOptions(.{ .default_target = .{
+        .abi = .gnu,
+    } });
 
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
