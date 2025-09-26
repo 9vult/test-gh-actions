@@ -34,7 +34,7 @@ jobs:
         env:
           MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
         run: |
-          Get-ChildItem "$env:DLL_DIR\*.dll.a" | ForEach-Object { $target = $_.FullName -replace '\.dll\.a$','.a'; if (-not (Test-Path $target)) { Copy-Item $_.FullName $target } }
+          Get-ChildItem "$env:DLL_DIR\*.dll.a" | ForEach-Object { $target = $_.FullName -replace '.dll.a$','.a'; if (-not (Test-Path $target)) { Copy-Item $_.FullName $target } }
 
       - name: Build Mizuki
         shell: pwsh
