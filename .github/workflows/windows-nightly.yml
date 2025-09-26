@@ -30,11 +30,9 @@ jobs:
             mingw-w64-clang-x86_64-ntldd
 
       - name: Copy dll.a to .a
-        shell: msys2 {0}
+        shell: bash
         run: |
-          pushd ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
-          for f in *.dll.a; do [ -e "${f%.dll.a}.a" ] || cp -v "$f" "${f%.dll.a}.a"; done
-          popd
+          for f in ${{ steps.msys2.outputs.msys2-location }}/clang64/lib/*.dll.a; do [ -e "${f%.dll.a}.a" ] || cp -v "$f" "${f%.dll.a}.a"; done
 
       - name: Build Mizuki
         shell: pwsh
