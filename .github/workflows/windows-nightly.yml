@@ -9,7 +9,7 @@ jobs:
   should-build:
     runs-on: ubuntu-latest
     outputs:
-      should_build: ${{ steps.check.outputs.should_run }}
+      should_build: ${{ steps.check.outputs.should_build }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -18,7 +18,7 @@ jobs:
         shell: bash
         run: |
           echo "Event type: ${{ github.event_name }}"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ]; then
             echo "Checking for commits in the past 24 hours..."
             commits=$(git log --oneline --since='24 hours ago' | wc -l)
             echo "Commits in the last 24 hours: $commits"
