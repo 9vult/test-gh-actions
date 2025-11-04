@@ -1,15 +1,15 @@
 const std = @import("std");
 
 // Add the required dynamic libraries
-fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile) void {
-    obj.addIncludePath(b.path("include"));
+fn linkLibraries(b: *std.Build, obj: *std.Build.Step.Compile, target: std.Build.ResolvedTarget) void {
+    obj.root_module.addIncludePath(b.path("include"));
 
-    // Add msys2 direcrtory if it is set
-    const msys2_dir = std.process.getEnvVarOwned(b.allocator, "MSYS2_DIR") catch "C:\\Users\\ame\\scoop\\apps\\msys2\\current\\clang64\\lib";
-    obj.root_module.addLibraryPath(.{ .cwd_relative = msys2_dir });
+    if (target.result.os.tag == .windows) {
+        obj.root_module.addLibraryPath(b.path("lib"));
+    }
 
-    obj.root_module.linkSystemLibrary("ass", .{});
     obj.root_module.linkSystemLibrary("ffms2", .{});
+    obj.root_module.linkSystemLibrary("ass", .{});
     obj.root_module.link_libc = true;
 }
 
@@ -21,9 +21,7 @@ pub fn build(b: *std.Build) void {
     // what target to build for. Here we do not override the defaults, which
     // means any target is allowed, and the default is native. Other options
     // for restricting supported target set are available.
-    const target = b.standardTargetOptions(.{ .default_target = .{
-        .abi = .gnu,
-    } });
+    const target = b.standardTargetOptions(.{});
 
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
@@ -49,9 +47,9 @@ pub fn build(b: *std.Build) void {
     // Now, we will create a static library based on the module we created above.
     // This creates a `std.Build.Step.Compile`, which is the build step responsible
     // for actually invoking the compiler.
-    const lib = b.addLibrary(.{ .name = "Mizuki", .root_module = lib_mod, .linkage = .dynamic });
+    const lib = b.addLibrary(.{ .name = "mizuki", .root_module = lib_mod, .linkage = .dynamic });
 
-    linkLibraries(b, lib);
+    linkLibraries(b, lib, target);
     lib.root_module.addImport("known-folders", known_folders);
 
     // This declares intent for the library to be installed into the standard
@@ -62,11 +60,11 @@ pub fn build(b: *std.Build) void {
     // This creates another `std.Build.Step.Compile`, but this one builds an executable
     // rather than a static library.
     const exe = b.addExecutable(.{
-        .name = "Mizuki",
+        .name = "mizuki",
         .root_module = lib_mod,
     });
 
-    linkLibraries(b, exe);
+    linkLibraries(b, exe, target);
     exe.root_module.addImport("known-folders", known_folders);
 
     // This declares intent for the executable to be installed into the
