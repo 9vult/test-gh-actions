@@ -42,7 +42,7 @@ jobs:
         shell: pwsh
         run: |
           cp "Mizuki/zig-out/bin/mizuki.dll" "Ameko/bin/Release/net9.0/win-x64/publish"
-          cp "Mizuki/lib/*.*" "Ameko/bin/Release/net9.0/win-x64/publish/*.*"
+          cp -Force "Mizuki/lib/*" "Ameko/bin/Release/net9.0/win-x64/publish/"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
