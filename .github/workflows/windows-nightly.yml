@@ -5,10 +5,6 @@ jobs:
   build:
     runs-on: windows-latest
 
-    defaults:
-      run:
-        shell: msys2 {0}
-
     steps:
       - uses: actions/checkout@v5
       - uses: mlugg/setup-zig@v2
@@ -18,28 +14,18 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Install Dependencies
-        id: msys2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: CLANG64
-          update: true
-          install: >-
-            mingw-w64-clang-x86_64-ffms2
-            mingw-w64-clang-x86_64-libass
-            mingw-w64-clang-x86_64-ntldd
-
-      - name: Copy dll.a to .a
+      - name: Download dependencies
         shell: pwsh
-        env:
-          MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
         run: |
-          Get-ChildItem "$env:DLL_DIR\*.dll.a" | ForEach-Object { $target = $_.FullName -replace '.dll.a$','.a'; if (-not (Test-Path $target)) { Copy-Item $_.FullName $target } }
+          $url = "https://files.catbox.moe/k555t7.zip"
+          $zip = "$env:RUNNER_TEMP/mizuki-deps.zip"
+          $lib = "Mizuki/lib"
+          New-Item -ItemType Directory -Path $lib -Force | Out-Null
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -Destinationpath $lib -Force
 
       - name: Build Mizuki
         shell: pwsh
-        env:
-          MSYS2_DIR: ${{ steps.msys2.outputs.msys2-location }}/clang64/lib
         run: |
           pushd Mizuki
           zig build --release=safe
@@ -53,12 +39,10 @@ jobs:
           popd
 
       - name: Copy Dependencies
-        shell: msys2 {0}
+        shell: pwsh
         run: |
-          cp "Mizuki/zig-out/bin/Mizuki.dll" "Ameko/bin/Release/net9.0/win-x64/publish"
-          for (dll in $(${{ steps.msys2.outputs.msys2-location }}/clang64/bin/ntldd -R "Mizuki/zig-out/bin/Mizuki.dll" | awk '/clang64/' {print $3})) do
-            cp "$dll" "Ameko/bin/Release/net9.0/win-x64/publish"
-          done
+          cp "Mizuki/zig-out/bin/mizuki.dll" "Ameko/bin/Release/net9.0/win-x64/publish"
+          cp "Mizuki/lib/*.*" "Ameko/bin/Release/net9.0/win-x64/publish/*.*"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
