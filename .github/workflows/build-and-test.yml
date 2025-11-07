@@ -143,7 +143,6 @@ jobs:
         shell: bash
         run: |
           cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net9.0/osx-arm64/publish"
-          cp -f "Mizuki/lib/*" "Ameko/bin/Release/net9.0/osx-arm64/publish/"
           echo "You will need to install libass and ffms2 to run Ameko. Example: brew install libass ffms2" > "Ameko/bin/Release/net9.0/osx-arm64/publish/DEPENDENCIES.txt"
 
       - name: Upload Artifact
@@ -199,7 +198,6 @@ jobs:
         shell: bash
         run: |
           cp "Mizuki/zig-out/lib/libmizuki.so" "Ameko/bin/Release/net9.0/linux-x64/publish"
-          cp -f "Mizuki/lib/*" "Ameko/bin/Release/net9.0/linux-x64/publish/"
           echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net9.0/linux-x64/publish/DEPENDENCIES.txt"
 
       - name: Upload Artifact
