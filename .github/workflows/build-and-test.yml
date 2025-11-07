@@ -195,7 +195,7 @@ jobs:
       - name: Copy Dependencies
         shell: bash
         run: |
-          cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net9.0/linux-x64/publish"
+          cp "Mizuki/zig-out/lib/libmizuki.so" "Ameko/bin/Release/net9.0/linux-x64/publish"
           cp -f "Mizuki/lib/*" "Ameko/bin/Release/net9.0/linux-x64/publish/"
           echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net9.0/linux-x64/publish/DEPENDENCIES.txt"
 
