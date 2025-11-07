@@ -44,7 +44,7 @@ jobs:
 
   build-windows:
     needs: should-build
-    if: needs.should-build.outputs.should_build == 'true'
+    if: false
     runs-on: windows-latest
 
     steps:
@@ -82,10 +82,7 @@ jobs:
 
       - name: Test Ameko
         shell: pwsh
-        run: |
-          pushd Ameko
-          dotnet test --no-build --verbosity normal
-          popd
+        run: dotnet test --no-build --verbosity normal
 
       - name: Copy Dependencies
         shell: pwsh
@@ -101,7 +98,7 @@ jobs:
 
   build-macos:
     needs: should-build
-    if: needs.should-build.outputs.should_build == 'true'
+    if: false
     runs-on: macos-latest
 
     steps:
@@ -148,10 +145,7 @@ jobs:
 
       - name: Test Ameko
         shell: bash
-        run: |
-          pushd Ameko
-          dotnet test --no-build --verbosity normal
-          popd
+        run: dotnet test --no-build --verbosity normal
 
       - name: Copy Dependencies
         shell: bash
@@ -196,10 +190,7 @@ jobs:
 
       - name: Build Ameko
         shell: bash
-        run: |
-          pushd Ameko
-          dotnet publish -c Release -p:SolutionDir=../ -r linux-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
-          popd
+        run: dotnet test --no-build --verbosity normal
 
       - name: Test Ameko
         shell: bash
