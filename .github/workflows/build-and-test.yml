@@ -19,7 +19,10 @@ jobs:
         id: ver
         shell: bash
         run: |
-          echo "value=$(git describe --long --abbrev=7 2>/dev/null | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' || git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          version="$(git describe --long --abbrev=7 2>/dev/null | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' || git rev-parse --short HEAD)"
+          echo Version: $version
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
       - name: Check if build should be performed
         id: check
         shell: bash
