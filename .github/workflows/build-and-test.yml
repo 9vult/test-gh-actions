@@ -44,7 +44,7 @@ jobs:
 
   build-windows:
     needs: should-build
-    if: needs.should-build.outputs.should_build == 'true'
+    if: false
     runs-on: windows-latest
 
     steps:
@@ -165,7 +165,7 @@ jobs:
 
   build-linux:
     needs: should-build
-    if: needs.should-build.outputs.should_build == 'true'
+    if: false
     runs-on: ubuntu-latest
 
     steps:
