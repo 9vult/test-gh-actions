@@ -44,7 +44,7 @@ jobs:
 
   build-windows:
     needs: should-build
-    if: false
+    if: needs.should-build.outputs.should_build == 'true'
     runs-on: windows-latest
 
     steps:
@@ -82,7 +82,7 @@ jobs:
 
       - name: Test Ameko
         shell: pwsh
-        run: dotnet test --verbosity normal
+        run: dotnet test
 
       - name: Copy Dependencies
         shell: pwsh
@@ -98,7 +98,7 @@ jobs:
 
   build-macos:
     needs: should-build
-    if: false
+    if: needs.should-build.outputs.should_build == 'true'
     runs-on: macos-latest
 
     steps:
@@ -145,7 +145,7 @@ jobs:
 
       - name: Test Ameko
         shell: bash
-        run: dotnet test --verbosity normal
+        run: dotnet test
 
       - name: Copy Dependencies
         shell: bash
@@ -197,7 +197,7 @@ jobs:
 
       - name: Test Ameko
         shell: bash
-        run: dotnet test --verbosity normal
+        run: dotnet test
 
       - name: Copy Dependencies
         shell: bash
