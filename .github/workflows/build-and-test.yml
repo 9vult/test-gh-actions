@@ -82,7 +82,7 @@ jobs:
 
       - name: Test Ameko
         shell: pwsh
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --verbosity normal
 
       - name: Copy Dependencies
         shell: pwsh
@@ -145,7 +145,7 @@ jobs:
 
       - name: Test Ameko
         shell: bash
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --verbosity normal
 
       - name: Copy Dependencies
         shell: bash
@@ -197,7 +197,7 @@ jobs:
 
       - name: Test Ameko
         shell: bash
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --verbosity normal
 
       - name: Copy Dependencies
         shell: bash
