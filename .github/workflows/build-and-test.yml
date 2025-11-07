@@ -119,6 +119,7 @@ jobs:
           path: |
             /opt/homebrew/Cellar
             /opt/homebrew/Cache
+            /opt/homebrew/lib/
           key: ${{ runner.os }}-homebrew-deps-v1
           restore-keys: |
             ${{ runner.os }}-homebrew-deps-
