@@ -136,50 +136,50 @@ jobs:
           path: Ameko/bin/Release/net9.0/osx-arm64/publish
 
   build-linux:
-  needs: should-build
-  if: needs.should-build.outputs.should_build == 'true'
-  runs-on: ubuntu-latest
+    needs: should-build
+    if: needs.should-build.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
 
-  steps:
-    - uses: actions/checkout@v5
-    - uses: mlugg/setup-zig@v2
-      with:
-        version: 0.15.1
-    - uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: "9.0.x"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.15.1
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "9.0.x"
 
-    - name: Install dependencies
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends \
-          libass-dev \
-          libffms2-dev
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libass-dev \
+            libffms2-dev
 
-    - name: Build Mizuki
-      shell: bash
-      run: |
-        pushd Mizuki
-        zig build --release=safe
-        popd
+      - name: Build Mizuki
+        shell: bash
+        run: |
+          pushd Mizuki
+          zig build --release=safe
+          popd
 
-    - name: Build Ameko
-      shell: bash
-      run: |
-        pushd Ameko
-        dotnet publish -c Release -p:SolutionDir=..\ -r linux-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
-        popd
+      - name: Build Ameko
+        shell: bash
+        run: |
+          pushd Ameko
+          dotnet publish -c Release -p:SolutionDir=..\ -r linux-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true
+          popd
 
-    - name: Copy Dependencies
-      shell: bash
-      run: |
-        cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net9.0/linux-x64/publish"
-        cp -f "Mizuki/lib/*" "Ameko/bin/Release/net9.0/linux-x64/publish/"
-        echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net9.0/linux-x64/publish/DEPENDENCIES.txt"
+      - name: Copy Dependencies
+        shell: bash
+        run: |
+          cp "Mizuki/zig-out/lib/libmizuki.dylib" "Ameko/bin/Release/net9.0/linux-x64/publish"
+          cp -f "Mizuki/lib/*" "Ameko/bin/Release/net9.0/linux-x64/publish/"
+          echo "You will need to install libass and ffms2 to run Ameko. Example: sudo apt install libass ffms2" > "Ameko/bin/Release/net9.0/linux-x64/publish/DEPENDENCIES.txt"
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ameko-linux-x64-${{ needs.should-build.outputs.version }}
-        path: Ameko/bin/Release/net9.0/linux-x64/publish
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ameko-linux-x64-${{ needs.should-build.outputs.version }}
+          path: Ameko/bin/Release/net9.0/linux-x64/publish
