@@ -15,12 +15,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          fetch-tags: true
       - name: Get version information
         id: ver
         shell: bash
         run: |
-          echo "value=$(git describe --long --abbrev=7 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g')" >> "$GITHUB_OUTPUT"
+          echo "value=$(git describe --long --abbrev=7 2>/dev/null | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' || git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
       - name: Check if build should be performed
         id: check
         shell: bash
@@ -47,8 +46,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-tags: true
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
@@ -106,8 +103,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-tags: true
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
@@ -161,8 +156,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-tags: true
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.1
