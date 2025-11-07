@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should_build: ${{ steps.check.outputs.should_build }}
-      version: ${{ steps.version.outputs.value }}
+      version: ${{ steps.ver.outputs.value }}
     steps:
       - uses: actions/checkout@v3
         with:
